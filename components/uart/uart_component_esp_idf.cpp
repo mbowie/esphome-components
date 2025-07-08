@@ -65,7 +65,7 @@ uart_config_t IDFUARTComponent::get_config_() {
   uart_config.parity = parity;
   uart_config.stop_bits = this->stop_bits_ == 1 ? UART_STOP_BITS_1 : UART_STOP_BITS_2;
   uart_config.flow_ctrl = hw_flowctrl;
-  uart_config.source_clk = UART_SCLK_APB;
+  uart_config.source_clk = UART_SCLK_DEFAULT;
   uart_config.rx_flow_ctrl_thresh = 122;
 
   return uart_config;
@@ -82,7 +82,7 @@ void IDFUARTComponent::setup() {
     this->mark_failed();
     return;
   }
-  this->uart_num_ = next_uart_num++;
+  this->uart_num_ = static_cast<uart_port_t>(next_uart_num++);
   ESP_LOGCONFIG(TAG, "Setting up UART %u...", this->uart_num_);
 
   this->lock_ = xSemaphoreCreateMutex();
@@ -172,7 +172,7 @@ bool IDFUARTComponent::peek_byte(uint8_t *data) {
   if (this->has_peek_)
     *data = this->peek_byte_;
   else {
-    int len = uart_read_bytes(this->uart_num_, data, 1, 20 / portTICK_RATE_MS);
+    int len = uart_read_bytes(this->uart_num_, data, 1, 20 / portTICK_PERIOD_MS);
     if (len == 0) {
       *data = 0;
     } else {
@@ -196,7 +196,7 @@ bool IDFUARTComponent::read_array(uint8_t *data, size_t len) {
     this->has_peek_ = false;
   }
   if (length_to_read > 0)
-    uart_read_bytes(this->uart_num_, data, length_to_read, 20 / portTICK_RATE_MS);
+    uart_read_bytes(this->uart_num_, data, length_to_read, 20 / portTICK_PERIOD_MS);
   xSemaphoreGive(this->lock_);
 #ifdef USE_UART_DEBUGGER
   for (size_t i = 0; i < len; i++) {
