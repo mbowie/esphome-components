@@ -129,6 +129,7 @@ void IDFUARTComponent::setup() {
   }
   // Not sure if this is required, however not seeing pin-shifting happening
   uart_set_mode(this->uart_num_, UART_MODE_RS485_HALF_DUPLEX);
+  uart_set_rts(this->uart_num_, 1); // Set RTS high initially (active low RTS)
 
   uint32_t invert = 0;
   if (this->tx_pin_ != nullptr && this->tx_pin_->is_inverted())
