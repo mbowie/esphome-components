@@ -100,8 +100,8 @@ void IDFUARTComponent::setup() {
   }
 
   // Enable internal pulldown for the RTS pin
-  gpio_pulldown_en(this->rts_pin_); // Enable internal pulldown for RTS
-  gpio_pullup_dis(this->rts_pin_);  // Disable internal pullup for RTS
+  gpio_pulldown_en(this->rts_pin_->get_pin()); // Enable internal pulldown for RTS
+  gpio_pullup_dis(this->rts_pin_->get_pin());  // Disable internal pullup for RTS
   
   err = uart_driver_install(this->uart_num_, this->rx_buffer_size_, 0, 0, nullptr, 0);
   if (err != ESP_OK) {
