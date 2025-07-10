@@ -5,6 +5,8 @@
 #include "esphome/core/defines.h"
 #include "esphome/core/helpers.h"
 #include "esphome/core/log.h"
+// Added
+#include "drivers/gpio.h"
 
 #ifdef USE_LOGGER
 #include "esphome/components/logger/logger.h"
@@ -109,6 +111,16 @@ void IDFUARTComponent::setup() {
   int8_t cts = this->cts_pin_ != nullptr ? this->cts_pin_->get_pin() : UART_PIN_NO_CHANGE;
   int8_t rts = this->rts_pin_ != nullptr ? this->rts_pin_->get_pin() : UART_PIN_NO_CHANGE;
 
+  // Hard-code the pull-down for the RTS pin
+  gpio_config_t rts_gpio_config = {
+    .pin_bit_mask = (1ULL << rts),
+    .mode = GPIO_MODE_OUTPUT,
+    .pull_up_en = GPIO_PULLUP_DISABLE,
+    .pull_down_en = GPIO_PULLDOWN_ENABLE,
+    .intr_type = GPIO_INTR_DISABLE,
+  };
+  gpio_config(&rts_gpio_config);
+  
   if (err != ESP_OK) {
     ESP_LOGW(TAG, "uart_set_pin failed: %s", esp_err_to_name(err));
     this->mark_failed();
