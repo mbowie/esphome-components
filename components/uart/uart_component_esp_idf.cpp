@@ -5,8 +5,6 @@
 #include "esphome/core/defines.h"
 #include "esphome/core/helpers.h"
 #include "esphome/core/log.h"
-// Added
-#include "driver/gpio.h"
 
 #ifdef USE_LOGGER
 #include "esphome/components/logger/logger.h"
@@ -98,10 +96,6 @@ void IDFUARTComponent::setup() {
     this->mark_failed();
     return;
   }
-
-  // Enable internal pulldown for the RTS pin
-  gpio_pulldown_en(static_cast<gpio_num_t>(this->rts_pin_->get_pin())); // Enable internal pulldown for RTS
-  gpio_pullup_dis(static_cast<gpio_num_t>(this->rts_pin_->get_pin()));  // Disable internal pullup for RTS
   
   err = uart_driver_install(this->uart_num_, this->rx_buffer_size_, 0, 0, nullptr, 0);
   if (err != ESP_OK) {
@@ -114,16 +108,6 @@ void IDFUARTComponent::setup() {
   int8_t rx = this->rx_pin_ != nullptr ? this->rx_pin_->get_pin() : -1;
   int8_t cts = this->cts_pin_ != nullptr ? this->cts_pin_->get_pin() : UART_PIN_NO_CHANGE;
   int8_t rts = this->rts_pin_ != nullptr ? this->rts_pin_->get_pin() : UART_PIN_NO_CHANGE;
-
-  // Hard-code the pull-down for the RTS pin
-  // gpio_config_t rts_gpio_config = {
-  //   .pin_bit_mask = (1ULL << rts),
-  //   .mode = GPIO_MODE_OUTPUT,
-  //   .pull_up_en = GPIO_PULLUP_DISABLE,
-  //   .pull_down_en = GPIO_PULLDOWN_ENABLE,
-  //   .intr_type = GPIO_INTR_DISABLE,
-  // };
-  // gpio_config(&rts_gpio_config);
 
   err = uart_set_pin(this->uart_num_, tx, rx, rts, cts);
   if (err != ESP_OK) {
