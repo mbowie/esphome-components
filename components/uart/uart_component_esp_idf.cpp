@@ -111,15 +111,15 @@ void IDFUARTComponent::setup() {
   int8_t cts = this->cts_pin_ != nullptr ? this->cts_pin_->get_pin() : UART_PIN_NO_CHANGE;
   int8_t rts = this->rts_pin_ != nullptr ? this->rts_pin_->get_pin() : UART_PIN_NO_CHANGE;
 
-  // Hard-code the pull-down for the CTS pin
-  gpio_config_t cts_gpio_config = {
+  // Hard-code the pull-down for the RTS pin
+  gpio_config_t rts_gpio_config = {
     .pin_bit_mask = (1ULL << rts),
-    .mode = GPIO_MODE_INPUT,
+    .mode = GPIO_MODE_OUTPUT,
     .pull_up_en = GPIO_PULLUP_DISABLE,
     .pull_down_en = GPIO_PULLDOWN_ENABLE,
     .intr_type = GPIO_INTR_DISABLE,
   };
-  gpio_config(&cts_gpio_config);
+  gpio_config(&rts_gpio_config);
   
   err = uart_set_pin(this->uart_num_, tx, rx, rts, cts);
   if (err != ESP_OK) {
