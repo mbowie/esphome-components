@@ -5,8 +5,6 @@
 #include "esphome/core/defines.h"
 #include "esphome/core/helpers.h"
 #include "esphome/core/log.h"
-// Added
-#include "driver/gpio.h"
 
 #ifdef USE_LOGGER
 #include "esphome/components/logger/logger.h"
