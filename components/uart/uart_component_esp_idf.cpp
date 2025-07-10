@@ -99,6 +99,10 @@ void IDFUARTComponent::setup() {
     return;
   }
 
+  // Enable internal pulldown for the RTS pin
+  gpio_pulldown_en(this->rts_pin_); // Enable internal pulldown for RTS
+  gpio_pullup_dis(this->rts_pin_);  // Disable internal pullup for RTS
+  
   err = uart_driver_install(this->uart_num_, this->rx_buffer_size_, 0, 0, nullptr, 0);
   if (err != ESP_OK) {
     ESP_LOGW(TAG, "uart_driver_install failed: %s", esp_err_to_name(err));
@@ -112,14 +116,14 @@ void IDFUARTComponent::setup() {
   int8_t rts = this->rts_pin_ != nullptr ? this->rts_pin_->get_pin() : UART_PIN_NO_CHANGE;
 
   // Hard-code the pull-down for the RTS pin
-  gpio_config_t rts_gpio_config = {
-    .pin_bit_mask = (1ULL << rts),
-    .mode = GPIO_MODE_OUTPUT,
-    .pull_up_en = GPIO_PULLUP_DISABLE,
-    .pull_down_en = GPIO_PULLDOWN_ENABLE,
-    .intr_type = GPIO_INTR_DISABLE,
-  };
-  gpio_config(&rts_gpio_config);
+  // gpio_config_t rts_gpio_config = {
+  //   .pin_bit_mask = (1ULL << rts),
+  //   .mode = GPIO_MODE_OUTPUT,
+  //   .pull_up_en = GPIO_PULLUP_DISABLE,
+  //   .pull_down_en = GPIO_PULLDOWN_ENABLE,
+  //   .intr_type = GPIO_INTR_DISABLE,
+  // };
+  // gpio_config(&rts_gpio_config);
   
   if (err != ESP_OK) {
     ESP_LOGW(TAG, "uart_set_pin failed: %s", esp_err_to_name(err));
